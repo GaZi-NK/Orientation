@@ -10,8 +10,8 @@ import android.os.Bundle
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
     private val matrixSize = 16
-    //センサーの値
-    private var magValues = FloatArray(3)
+    //センサーの値（配列）
+    private var mgValues = FloatArray(3)
     private  var acValues = FloatArray(3)
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -24,7 +24,16 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         val I = FloatArray(matrixSize)
         val orValues = FloatArray(3)
 
+        if(event == null) return //eventがからでないことを確認
+        //センサーのタイ鵜を確認
+        when(event.sensor.type){
+            //各センサーの値を取得し変数へ保存
+            Sensor.TYPE_ACCELEROMETER -> acValues = event.values.clone()    //加速度センサー
+            Sensor.TYPE_MAGNETIC_FIELD -> mgValues = event.values.clone()  //磁気センサー
+        }
 
+        //加速度センサーと磁気センサーから回転行(inR),回転列(I)を作成
+        SensorManager.getRotationMatrix(inR, I, acValues, mgValues)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
